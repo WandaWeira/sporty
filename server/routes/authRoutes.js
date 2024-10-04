@@ -7,7 +7,7 @@ const { User } = require('../models');
 // User Registration
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { firstName, lastName, username, email, password, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -21,15 +21,40 @@ router.post('/register', async (req, res) => {
 
     // Create new user
     const newUser = await User.create({
+      firstName,
+      lastName,
       username,
       email,
       password: hashedPassword,
       role
     });
 
-    res.status(201).json({ message: 'User registered successfully', userId: newUser.id });
+    // Check if JWT_SECRET is set
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not set in the environment');
+    }
+
+    // Create and sign JWT
+    const token = jwt.sign(
+      { userId: newUser.id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      user: {
+        id: newUser.id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        email: newUser.email,
+        role: newUser.role
+      },
+      token
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error registering user', error });
+    console.error('Detailed registration error:', error);
+    res.status(500).json({ message: 'Error registering user', error: error.message, stack: error.stack });
   }
 });
 
@@ -51,24 +76,24 @@ router.post('/login', async (req, res) => {
     }
 
     // Create and sign JWT
-    const payload = {
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({
       user: {
         id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
         role: user.role
-      }
-    };
-
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+      },
+      token
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error logging in', error });
+    res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 });
 

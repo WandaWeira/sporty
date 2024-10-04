@@ -1,8 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const db = require("./models");
+const cors = require("cors");
+
+// app.use(cors({
+//   origin: 'http://localhost:3000', // Replace with your frontend URL
+//   credentials: true,
+// }));
 
 const app = express();
+
+app.use(cors());
+require("dotenv").config();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,23 +27,22 @@ const playerRecruiterRoutes = require("./routes/playerRecruiterRoutes");
 const postRoutes = require("./routes/postRoutes");
 const scoutRoutes = require("./routes/scoutRoutes");
 const tournamentRoutes = require("./routes/tournamentRoutes");
-const authRoutes = require('./routes/authRoutes');
-const messageRoutes = require('./routes/messageRoutes');
+const authRoutes = require("./routes/authRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 // Use routes
-router.use('/auth', authRoutes);
-router.use("/users", userRoutes);
-router.use("/clubs", clubRoutes);
-router.use("/coaches", coachRoutes);
-router.use("/comments", commentRoutes);
-router.use("/events", eventRoutes);
-router.use("/players", playerRoutes);
-router.use("/player-recruiters", playerRecruiterRoutes);
-router.use("/posts", postRoutes);
-router.use("/scouts", scoutRoutes);
-router.use("/tournaments", tournamentRoutes);
-router.use('/messages', messageRoutes);
-
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/clubs", clubRoutes);
+app.use("/coaches", coachRoutes);
+app.use("/comments", commentRoutes);
+app.use("/events", eventRoutes);
+app.use("/players", playerRoutes);
+app.use("/player-recruiters", playerRecruiterRoutes);
+app.use("/posts", postRoutes);
+app.use("/scouts", scoutRoutes);
+app.use("/tournaments", tournamentRoutes);
+app.use("/messages", messageRoutes);
 
 const PORT = process.env.PORT || 3001;
 
