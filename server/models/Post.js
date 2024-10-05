@@ -11,7 +11,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     videoUrl: {
       type: DataTypes.STRING,
+      allowNull: true,
     },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    
     isApproved: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
