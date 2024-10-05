@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import StoreProvider from "./redux";
+import Header from "@/app/components/Header";
+import Sidebar from "@/app/components/Sidebar";
+import RightSidebar from "./components/RightSidebar";
+import { SessionProvider } from "next-auth/react";
+import { Providers } from "@/app/components/providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,9 +32,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 min-h-screen`}
       >
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <Providers>
+            <Header />
+            <div className="container mx-auto px-4 py-8 flex">
+              <Sidebar />
+              <main className="flex-grow mx-8">{children}</main>
+              <RightSidebar />
+            </div>
+          </Providers>
+        </StoreProvider>
       </body>
     </html>
   );
