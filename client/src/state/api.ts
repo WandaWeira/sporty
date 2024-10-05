@@ -73,7 +73,7 @@ export const api = createApi({
       }),
       invalidatesTags: ['Posts'],
     }),
-    likePost: build.mutation<void, number>({
+    likePost: build.mutation<Post, number>({
       query: (postId) => ({
         url: `posts/${postId}/like`,
         method: 'POST',
@@ -95,6 +95,10 @@ export const api = createApi({
       }),
       invalidatesTags: ['Posts'],
     }),
+    getComments: build.query<Comment[], number>({
+      query: (postId) => `posts/${postId}/comments`,
+      providesTags: ['Posts'],
+    }),
 
   }),
 });
@@ -109,4 +113,5 @@ export const {
   useLikePostMutation,
   useAddCommentMutation,
   useSharePostMutation,
+  useGetCommentsQuery,
 } = api;

@@ -164,13 +164,14 @@ router.get("/:postId/comments", async (req, res) => {
 router.post("/:postId/like", async (req, res) => {
   try {
     const post = await Post.findByPk(req.params.postId);
-    const user = await User.findByPk(req.body.userId);
-    if (!post || !user) {
-      return res.status(404).json({ message: "Post or User not found" });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
     }
-    await post.addLikedBy(user);
+    
+    // Increment likes count without checking for user
     await post.increment("likesCount");
-    res.json({ message: "Post liked successfully" });
+    const updatedPost = await Post.findByPk(req.params.postId);
+    res.json(updatedPost);
   } catch (error) {
     res.status(500).json({ message: "Error liking post", error });
   }
